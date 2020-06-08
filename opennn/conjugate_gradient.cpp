@@ -1584,18 +1584,14 @@ OptimizationAlgorithm::Results ConjugateGradient::perform_training()
       {
          information = loss_index_pointer->write_information();
 
-         cout << "Epoch " << epoch << ";\n"
-                   << "Parameters norm: " << parameters_norm << "\n"
-                   << "Training loss: " << training_loss << "\n"
-                   << "Gradient norm: " << gradient_norm << "\n"
-                   << information 
-                   << "Training rate: " << learning_rate << "\n"
-                   << "Elapsed time: " << write_elapsed_time(elapsed_time) << endl;
+		 DisplayFeedback display_feedback(epoch, elapsed_time, training_loss, parameters_norm, gradient_norm, learning_rate);
 
          if(selection_instances_number > 0)
          {
-            cout << "Selection error: " << selection_error << endl;
+			display_feedback.selection_error = selection_error;
          }
+		 this->run_display_feedback(display_feedback);
+		 std::cout << information << "\n\n";
       }
 
       // Set new parameters

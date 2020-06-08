@@ -191,6 +191,14 @@ void OptimizationAlgorithm::set_display_period(const size_t& new_display_period)
    display_period = new_display_period;
 }
 
+void OptimizationAlgorithm::bind_display_feedback_listener(DisplayFeedbackListener * display_feedback_listener)
+{
+	if (display_feedback_listener)
+	{
+		this->display_feedback_delegate = std::bind(&DisplayFeedbackListener::OnDisplayFeedback, display_feedback_listener, std::placeholders::_1);
+	}
+}
+
 
 /// Sets a new number of iterations between the training saving progress.
 /// @param new_save_period
@@ -440,6 +448,57 @@ void OptimizationAlgorithm::load(const string& file_name)
    }
 
    from_XML(document);
+}
+
+
+void OptimizationAlgorithm::run_display_feedback(DisplayFeedback display_feedback)
+{
+	if (display)
+	{
+		std::cout << "Epoch " << display_feedback.epoch << "\n"
+			<< "Training loss: " << display_feedback.training_loss << "\n";
+		//
+		//Optionals
+		//
+		if (display_feedback.batch_instances_number != 0)
+		{
+			std::cout << "Batch Instances: " << display_feedback.batch_instances_number << "\n";
+		}
+		// Parameters Norm
+		if (display_feedback.parameters_norm != 0.0)
+		{
+			std::cout << "Parameters Norm: " << display_feedback.parameters_norm << "\n";
+		}
+		// Gradient Norm
+		if (display_feedback.gradient_norm != 0.0)
+		{
+			std::cout << "Gradient Norm: " << display_feedback.gradient_norm << "\n";
+		}
+		// Learning rate
+		if (display_feedback.learning_rate != 0.0)
+		{
+			std::cout << "Learning Rate: " << display_feedback.learning_rate << "\n";
+		}
+		// Damping Parameter
+		if (display_feedback.damping_parameter != 0.0)
+		{
+			std::cout << "Damping Parameter: " << display_feedback.damping_parameter << "\n";
+		}
+		// Selection Error
+		if (display_feedback.selection_error != 0.0)
+		{
+			std::cout << "Selection Error: " << display_feedback.selection_error << "\n";
+		}
+
+		// Elapsed time
+		std::cout << "Elapsed Time: " << write_elapsed_time(display_feedback.elapsed_time) << std::endl << std::endl;
+	}
+
+	// Notify listener
+	if (this->display_feedback_delegate)
+	{
+		this->display_feedback_delegate(display_feedback);
+	}
 }
 
 

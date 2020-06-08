@@ -32,6 +32,81 @@ namespace OpenNN
 
 /// This abstract class represents the concept of optimization algorithm for a neural network in OpenNN library.
 
+
+// This Structure contains the Display Callback Data
+struct DisplayFeedback {
+
+	// Constructor
+	DisplayFeedback()
+	{
+	}
+
+	DisplayFeedback(size_t epoch, double elapsed_time, double training_loss)
+		: epoch(epoch)
+		, elapsed_time(elapsed_time)
+		, training_loss(training_loss)
+	{
+	}
+
+	DisplayFeedback(size_t epoch, double elapsed_time, double training_loss, double parameters_norm, double gradient_norm)
+		: epoch(epoch)
+		, elapsed_time(elapsed_time)
+		, training_loss(training_loss)
+		, parameters_norm(parameters_norm)
+		, gradient_norm(gradient_norm)
+	{
+	}
+
+	DisplayFeedback(size_t epoch, double elapsed_time, double training_loss, double parameters_norm, double gradient_norm, double learning_rate)
+		: epoch(epoch)
+		, elapsed_time(elapsed_time)
+		, training_loss(training_loss)
+		, parameters_norm(parameters_norm)
+		, gradient_norm(gradient_norm)
+		, learning_rate(learning_rate)
+	{
+	}
+
+	DisplayFeedback(size_t epoch, double elapsed_time, double training_loss, double parameters_norm, double gradient_norm, double learning_rate, double damping_parameter)
+		: epoch(epoch)
+		, elapsed_time(elapsed_time)
+		, training_loss(training_loss)
+		, parameters_norm(parameters_norm)
+		, gradient_norm(gradient_norm)
+		, learning_rate(learning_rate)
+		, damping_parameter(damping_parameter)
+	{
+	}
+	DisplayFeedback(size_t epoch, double elapsed_time, double training_loss, double parameters_norm, double gradient_norm, double learning_rate, double damping_parameter, double selection_error)
+		: epoch(epoch)
+		, elapsed_time(elapsed_time)
+		, training_loss(training_loss)
+		, parameters_norm(parameters_norm)
+		, gradient_norm(gradient_norm)
+		, learning_rate(learning_rate)
+		, damping_parameter(damping_parameter)
+		, selection_error(selection_error)
+	{
+	}
+
+	// Members
+	size_t epoch = 0;
+	size_t batch_instances_number = 0;
+	double elapsed_time = 0.0;
+	double training_loss = 0.0;
+	double gradient_norm = 0.0;
+	double parameters_norm = 0.0;
+	double damping_parameter = 0.0;
+	double selection_error;
+	double learning_rate = 0.0;
+};
+
+// Interface class for display feedback
+class DisplayFeedbackListener {
+public:
+	virtual void OnDisplayFeedback(DisplayFeedback display_feedback) = 0;
+};
+
 ///
 /// Any derived class must implement the perform_training() method.
 
@@ -166,6 +241,8 @@ public:
 
    void set_display_period(const size_t&);
 
+   void bind_display_feedback_listener(DisplayFeedbackListener* display_feedback_listener);
+
    void set_save_period(const size_t&);
    void set_neural_network_file_name(const string&);
 
@@ -195,6 +272,8 @@ public:
    void load(const string&);
 
 protected:
+   /// Methods for DisplayFeedback
+   void run_display_feedback(DisplayFeedback display_feedback);
 
    /// Pointer to a loss index for a neural network object.
 
@@ -221,6 +300,9 @@ protected:
    /// Display messages to screen.
 
    bool display;
+
+   // Display Feedback Delegate
+   std::function<void(struct DisplayFeedback)> display_feedback_delegate;
 };
 
 }

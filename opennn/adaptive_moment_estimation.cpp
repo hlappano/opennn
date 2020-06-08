@@ -902,15 +902,8 @@ OptimizationAlgorithm::Results AdaptiveMomentEstimation::perform_training()
         }
         else if(display && epoch % display_period == 0)
         {
-           cout << "Epoch " << epoch << ";\n"
-                << "Training loss: " << training_error << "\n"
-//                << "Batch size: " << batch_instances_number << "\n"
-//                << "Gradient norm: " << gradient_norm << "\n"
-//                << loss_index_pointer->write_information()
-//                << "Learning rate: " << learning_rate<< "\n"
-                << "Elapsed time: " << write_elapsed_time(elapsed_time)<<"\n";
-//                << "Selection error: " << selection_error << endl;
-
+		   DisplayFeedback display_feedback(epoch, elapsed_time, training_error);
+		   this->run_display_feedback(display_feedback);
         }
 
           // Update stuff

@@ -1010,18 +1010,15 @@ OptimizationAlgorithm::Results LevenbergMarquardtAlgorithm::perform_training()
       }
       else if(display && epoch % display_period == 0)
       {
-         cout << "Epoch " << epoch << ";\n"
-              << "Parameters norm: " << parameters_norm << "\n"
-              << "Training loss: " << training_loss << "\n"
-              << "Gradient norm: " << gradient_norm << "\n"
-              << loss_index_pointer->write_information()
-              << "Damping parameter: " << damping_parameter << "\n"
-              << "Elapsed time: " << write_elapsed_time(elapsed_time) << endl;
+		  DisplayFeedback display_feedback(epoch, elapsed_time, training_loss, parameters_norm, gradient_norm);
+		  display_feedback.damping_parameter = damping_parameter;
 
          if(abs(selection_error - 0) < numeric_limits<double>::epsilon())
          {
-            cout << "Selection error: " << selection_error << endl;
+			display_feedback.selection_error = selection_error;
          }
+		 this->run_display_feedback(display_feedback);
+		 std::cout << loss_index_pointer->write_information() << "\n\n";
       }
 
       // Update stuff
